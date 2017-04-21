@@ -37,10 +37,24 @@ def build(bot, update):
             document=open(filename, "rb"),
             chat_id=update.message.chat_id)
 
+def upload(bot, update):
+    if update.message.from_user.id in sudo_users:
+        bot.sendChatAction(chat_id=update.message.chat_id,
+                            action=ChatAction.TYPING)
+        bot.sendMessage(chat_id=update.message.chat_id,
+                        text="Uploading to the chat")
+        os.chdir(path + "/out")
+        filename = os.listdir(".")[0]
+        bot.sendDocument(
+            document=open(filename,rb),
+            chat_id=update.message.chat_id)
+
 
 build_handler = CommandHandler('build', build)
+upload_handler = CommandHandler('upload', upload)
 
 dispatcher.add_handler(build_handler)
+dispatcher.add_handler(upload_handler)
 
 updater.start_polling()
 updater.idle()
