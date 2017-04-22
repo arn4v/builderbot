@@ -40,6 +40,9 @@ def build(bot, update):
             document=open(filename, "rb"),
             chat_id=update.message.chat_id)
 
+    else:
+        sendNotAuthorizedMessage(bot, update)
+
 
 def upload(bot, update):
     if isAuthorized(update):
@@ -53,6 +56,9 @@ def upload(bot, update):
             document=open(filename, "rb"),
             chat_id=update.message.chat_id)
 
+    else:
+        sendNotAuthorizedMessage(bot, update)
+
 
 def restart(bot, update):
     if isAuthorized(update):
@@ -60,10 +66,16 @@ def restart(bot, update):
         time.sleep(0.2)
         os.execl(sys.executable, sys.executable, *sys.argv)
     else:
-        bot.sendMessage(update.message.chat_id, "Ummm, nope.")
+        sendNotAuthorizedMessage(bot, update)
 
 def isAuthorized(update):
     return update.message.from_user.id in sudo_users
+
+def sendNotAuthorizedMessage(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id,
+                        action=ChatAction.TYPING)
+    bot.sendMessage(chat_id=update.message.chat_id,
+                    text="@" + update.message.from_user.username + " isn't authorized for this task!")
 
 
 build_handler = CommandHandler('build', build)
