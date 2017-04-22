@@ -27,7 +27,7 @@ dispatcher = updater.dispatcher
 
 
 def build(bot, update):
-    if update.message.from_user.id in sudo_users:
+    if isAuthorized(update):
         bot.sendChatAction(chat_id=update.message.chat_id,
                            action=ChatAction.TYPING)
         bot.sendMessage(chat_id=update.message.chat_id,
@@ -42,7 +42,7 @@ def build(bot, update):
 
 
 def upload(bot, update):
-    if update.message.from_user.id in sudo_users:
+    if isAuthorized(update):
         bot.sendChatAction(chat_id=update.message.chat_id,
                            action=ChatAction.TYPING)
         bot.sendMessage(chat_id=update.message.chat_id,
@@ -55,12 +55,15 @@ def upload(bot, update):
 
 
 def restart(bot, update):
-    if update.message.from_user.id in sudo_users:
+    if isAuthorized(update):
         bot.sendMessage(update.message.chat_id, "Bot is restarting...")
         time.sleep(0.2)
         os.execl(sys.executable, sys.executable, *sys.argv)
     else:
         bot.sendMessage(update.message.chat_id, "Ummm, nope.")
+
+def isAuthorized(update):
+    return update.message.from_user.id in sudo_users
 
 
 build_handler = CommandHandler('build', build)
