@@ -39,7 +39,6 @@ def build(bot, update):
         bot.sendDocument(
             document=open(filename, "rb"),
             chat_id=update.message.chat_id)
-
     else:
         sendNotAuthorizedMessage(bot, update)
 
@@ -55,7 +54,6 @@ def upload(bot, update):
         bot.sendDocument(
             document=open(filename, "rb"),
             chat_id=update.message.chat_id)
-
     else:
         sendNotAuthorizedMessage(bot, update)
 
