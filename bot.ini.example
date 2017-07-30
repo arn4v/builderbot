@@ -1,7 +1,0 @@
-[KEYS]
-bot_api = api_key
-[ADMIN]
-sudo = [your_id]
-username = @username
-[PATH]
-path = /path/to/source/with/trailing/slash/
