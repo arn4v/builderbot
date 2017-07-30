@@ -47,6 +47,28 @@ def build(bot, update):
     else:
         sendNotAuthorizedMessage(bot, update)
 
+def builder(bot, update):
+    if isAuthorized(update):
+        bot.sendChatAction(chat_id=update.message.chat_id,
+                           action=ChatAction.TYPING)
+        os.system("cd /home/arn4v/deso")
+        rom=update.message.text.split(' ')[1]
+        device=update.message.text.split(' ')[2]
+        if rom is None:
+            rom='fork'
+
+        if not os.path.exists('/home/%s/build/envsetup.sh' % rom):
+            bot.sendMessage(update.message.chat_id, "%s hasn't been synced" % rom)
+        else:
+            os.system("cd /home/arn4v/%s" % rom)
+            bot.sendMessage(update.message.chat_id, reply_to_message_id=update.message.reply_to_message.message_id, text="Building %s" % rom)
+            os.system("sh build/envsetup.sh")
+            os.system("breakfast %s" % device)
+            os.system("make -j21 bacon")
+            os.system("cd $OUT")
+    else:
+        sendNotAuthorizedMessage(bot, update)
+
 def los(bot, update):
     if isAuthorized(update):
         bot.sendChatAction(chat_id=update.message.chat_id,
@@ -106,7 +128,7 @@ def upload(bot, update):
         rename_command=os.system("mv out/velvet* /home/arn4v/velvet.zip")
 #        subprocess.call(rename_command)
 #        filename=os.system("ls out/velvet* | tail -1")
-	filename = "/home/arn4v/velvet.zip"
+        filename = "/home/arn4v/velvet.zip"
         bot.sendChatAction(chat_id=update.message.chat_id,
                            action=ChatAction.UPLOAD_DOCUMENT)
         bot.sendDocument(
@@ -137,6 +159,7 @@ def sendNotAuthorizedMessage(bot, update):
 
 
 build_handler = CommandHandler('build', build)
+builder_handler = CommandHandler('builder', builder)
 los_handler = CommandHandler('los', los)
 beta_handler = CommandHandler('beta', beta)
 stock_handler = CommandHandler('stock', stock)
@@ -144,6 +167,7 @@ upload_handler = CommandHandler('upload', upload)
 restart_handler = CommandHandler('restart', restart)
 
 dispatcher.add_handler(build_handler)
+dispatcher.add_handler(builder_handler)
 dispatcher.add_handler(los_handler)
 dispatcher.add_handler(beta_handler)
 dispatcher.add_handler(stock_handler)
