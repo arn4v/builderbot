@@ -103,9 +103,10 @@ def upload(bot, update):
                         text="Uploading to the chat")
 #        clean_command=os.system("rm /home/arn4v/velvet/*/out/*.zip")
 #        subprocess.call(clean_command)
-#        rename_command=os.system("mv out/velvet* /home/arn4v/velvet.zip")
+        rename_command=os.system("mv out/velvet* /home/arn4v/velvet.zip")
 #        subprocess.call(rename_command)
-        filename=os.system("ls out/velvet* | tail -1")
+#        filename=os.system("ls out/velvet* | tail -1")
+	filename = "/home/arn4v/velvet.zip"
         bot.sendChatAction(chat_id=update.message.chat_id,
                            action=ChatAction.UPLOAD_DOCUMENT)
         bot.sendDocument(
