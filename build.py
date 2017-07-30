@@ -27,6 +27,7 @@ stock_path = config['STOCK']['stock']
 sudo_users = config['ADMIN']['sudo']
 dispatcher = updater.dispatcher
 
+logfile = '/home/akhil/downloads/.ts/bot-log.txt'
 
 def id(bot, update):
     chatid=str(update.message.chat_id)
@@ -40,11 +41,12 @@ def id(bot, update):
         bot.sendMessage(update.message.chat_id, text="ID of this group is " + chatid, reply_to_message_id=update.message.message_id)
 
 
-def buildvelvet(bot, update):
+def build(bot, update):
     if isAuthorized(update):
         bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
-        bot.sendMessage(chat_id=update.message.chat_id,
-                        text="Building and uploading to the chat")
+        variant=update.message.text.split(' ')[1]
+        os.chdir("/home/arn4v/velvet/%s" % variant)
+        bot.sendMessage(update.message.chat_id, "Building Velvet for mido: %s variant" % variant)
         build_command = ['./build.sh']
         subprocess.call(build_command)
         subprocess.call(build_command)
@@ -94,10 +96,6 @@ def beta(bot, update):
         bot.sendMessage(chat_id=update.message.chat_id,
                         text="Switched to beta kernel directory")
         os.chdir(beta_path)
-        pull_command = ['git pull git://github.com/velvetkernel/mido beta']
-        reset_command = ['git reset --hard']
-        subprocess.call(reset_command)
-        subprocess.call(pull_command)
     else:
         sendNotAuthorizedMessage(bot, update)
 
@@ -167,22 +165,53 @@ def sendNotAuthorizedMessage(bot, update):
     bot.sendMessage(chat_id=update.message.chat_id,
                     text="@" + update.message.from_user.username + " isn't authorized for this task!")
 
+def getlog(bot, update):
+    bot.sendDocument(update.message.chat_id, open(logfile, 'rb'))
 
-buildvelvet_handler = CommandHandler('buildvevet', buildvelvet)
-#builder_handler = CommandHandler('builder', builder)
-los_handler = CommandHandler('los', los)
-beta_handler = CommandHandler('beta', beta)
-stock_handler = CommandHandler('stock', stock)
-upload_handler = CommandHandler('upload', upload)
-restart_handler = CommandHandler('restart', restart)
+def clearlog(bot, update):
+    if isAuthorized(update):
+        subprocess.call(['rm', '-fv', logfile])
+        bot.sendMessage(update.message.chat_id, "Cleared logs.")
 
-dispatcher.add_handler(buildvelvet_handler)
-#dispatcher.add_handler(builder_handler)
-dispatcher.add_handler(los_handler)
-dispatcher.add_handler(beta_handler)
-dispatcher.add_handler(stock_handler)
-dispatcher.add_handler(upload_handler)
-dispatcher.add_handler(restart_handler)
+def pull(bot, update):
+    if isAuthorized(update):
+        bot.sendChatAction(update.message.chat_id, ChatAction.TYPING)
+        bot.sendMessage(update.message.chat_id, reply_to_message_id=update.message.message_id, text="Fetching remote repo")
+        subprocess.call(['git', 'fetch', 'origin', 'master', '-f'])
+        bot.sendMessage(update.message.chat_id, reply_to_message_id=update.message.message_id, text="Resetting to latest commit")
+        subprocess.call(['git', 'reset', '--hard', 'origin/master'])
+        restart(bot, update)
+    else:
+        sendNotAuthorizedMessage(bot, update)
+
+def push(bot, update):
+    if isAuthorized(update):
+        subprocess.call(['git', 'push', 'origin', 'master'])
+        bot.sendMessage(update.message.chat_id, text="K pushed")
+    else:
+        sendNotAuthorizedMessage(bot, update)
+
+idHandler = CommandHandler('id', id)
+buildvelvetHandler = CommandHandler('buildvelvet', buildvelvet)
+builderHandler = CommandHandler('builder', builder)
+losHandler = CommandHandler('los', los)
+betaHandler = CommandHandler('beta', beta)
+stockHandler = CommandHandler('stock', stock)
+uploadHandler = CommandHandler('upload', upload)
+restartHandler = CommandHandler('restart', restart)
+pullHandler = CommandHandler('pull', pull)
+pushHandler = CommandHandler('push', push)
+
+dispatcher.add_handler(idHandler)
+dispatcher.add_handler(buildHandler)
+dispatcher.add_handler(builderHandler)
+dispatcher.add_handler(losHandler)
+dispatcher.add_handler(betaHandler)
+dispatcher.add_handler(stockHandler)
+dispatcher.add_handler(uploadHandler)
+dispatcher.add_handler(restartHandler)
+dispatcher.add_handler(pullHandler)
+dispatcher.add_handler(pushHandler)
 
 updater.start_polling()
 updater.idle()
