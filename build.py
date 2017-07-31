@@ -60,29 +60,17 @@ def builder(bot, update):
         rom=update.message.text.split(' ')[1]
         device=update.message.text.split(' ')[2]
         command=update.message.text.split(' ')[3]
-        os.system("rm /home/arn4v/velvet/builderbot/romlink.txt")
-        os.system("rm /home/arn4v/.rombuild")
+        os.system("rm ${HOME}/velvet/builderbot/romlink.txt")
+        os.system("rm ${HOME}/.rombuild")
         os.system("echo ROM=%s >> /home/arn4v/.rombuild" % rom)
         os.system("echo DEVICE=%s >> /home/arn4v/.rombuild" % device)
         os.system("echo COMMAND=%s >> /home/arn4v/.rombuild" % command)
         bot.sendMessage(update.message.chat_id, "Building %s for %s" % (rom, device))
-        os.system("bash /home/arn4v/bin/rombuild > /home/arn4v/velvet/builderbot/romlog")
-        romlinkfile2='/home/arn4v/velvet/builderbot/romlink.txt'
-        if os.path.exists(romlinkfile2):
-            romlinkfile = open("romlink.txt", "r")
-            romlink = romlinkfile.readlines()
-            romlink[0]
-            bot.sendMessage(update.message.chat_id, parse_mode="Markdown", text = romlink[0])
-        else:
-            bot.sendMessage(update.message.chat_id, "FAILED: %s build for %s. Sending log." % (rom, device))
-            romlog='/home/arn4v/velvet/builderbot/romlog'
-            bot.sendChatAction(chat_id=update.message.chat_id,
-                               action=ChatAction.UPLOAD_DOCUMENT)
-            bot.sendDocument(
-                document=open(romlog, "rb"),
-                chat_id=update.message.chat_id)
-            os.chdir("/home/arn4v/velvet/builderbot")
-            os.system("rm romlog")
+        os.system("bash ${HOME}/bin/rombuild")
+        romlinkfile = open("romlink.txt", "r")
+        romlink = romlinkfile.readlines()
+        romlink[0]
+        bot.sendMessage(update.message.chat_id, parse_mode="Markdown", text = romlink[0])
     else:
         sendNotAuthorizedMessage(bot, update)
 
