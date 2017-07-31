@@ -52,16 +52,20 @@ def buildvelvet(bot, update):
         os.system("rm /home/arn4v/velvet.zip")
     else:
         sendNotAuthorizedMessage(bot, update)
-        
+
 def sync(bot, update):
     if isAuthorized(update):
         bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
-    else:
         romdir=update.message.text.split(' ')[1]
         command=update.message.text.split(' ')[2]
+        bot.sendMessage(update.message.chat_id, "Syncing %s into /home/arn4v/%s" % rom)
         os.system("mkdir /home/arn4v/%s" % romdir)
         os.chdir('/home/arn4v/%s' % romdir)
         os.system("%s" % command)
+        os.system("repo sync -j128 -q")
+        bot.sendMessage(update.message.chat_id, "%s synced in /home/arn4v/%s" % rom)
+    else:
+        sendNotAuthorizedMessage(bot, update)
 
 def builder(bot, update):
     if isAuthorized(update):
