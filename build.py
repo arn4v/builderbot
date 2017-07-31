@@ -40,7 +40,7 @@ def buildvelvet(bot, update):
         variant=update.message.text.split(' ')[1]
         command=update.message.text.split(' ')[2]
         os.chdir("/home/arn4v/velvet/%s" % variant)
-        bot.sendMessage(update.message.chat_id, "Building Velvet for mido: %s variant" % variant, "%s" % command)
+        bot.sendMessage(update.message.chat_id, "Building Velvet for mido: %s variant, %s command" % (variant, command))
         os.system('bash build2.sh %s' % command)
         os.system("mv out/velvet* /home/arn4v/velvet.zip")
         filename = "/home/arn4v/velvet.zip"
@@ -60,11 +60,29 @@ def builder(bot, update):
         rom=update.message.text.split(' ')[1]
         device=update.message.text.split(' ')[2]
         command=update.message.text.split(' ')[3]
+        command2=update.message.text.split(' ')[4]
+        os.system("rm ${HOME}/.rombuild")
         os.system("echo ROM=%s >> /home/arn4v/.rombuild" % rom)
         os.system("echo DEVICE=%s >> /home/arn4v/.rombuild" % device)
         os.system("echo COMMAND=%s >> /home/arn4v/.rombuild" % command)
-        subprocess.call(['bash /home/arn4v/bin/rombuild'])
-        romlink=os.system("cat /home/arn4v/velvet/builderbot/romlink.txt")
+        os.system("echo COMMAND2=%s >> /home/arn4v/.rombuild" % command2)
+        bot.sendMessage(update.message.chat_id, "Building %s for %s" % (rom, device))
+        if command is ['sync']:
+            bot.sendMessage(update.message.chat_id, text="Syncing.")
+        if command is ['clean']:
+            bot.sendMessage(update.message.chat_id, text="Cleaning.")
+        if command is ['dirty']:
+            bot.sendMessage(update.message.chat_id, text="Dirty clenaed.")
+        if command2 is ['sync']:
+            bot.sendMessage(update.message.chat_id, text="Syncing.")
+        if command2 is ['clean']:
+            bot.sendMessage(update.message.chat_id, text="Cleaning.")
+        if command2 is ['dirty']:
+            bot.sendMessage(update.message.chat_id, text="Dirty clenaed.")
+        os.system("bash ${HOME}/bin/rombuild")
+        romlinkfile = open(“romlink.txt”, “r”)
+        variable = file.readlines(1)
+#        romlink=os.system("cat /home/arn4v/velvet/builderbot/romlink.txt")
         bot.sendMessage(update.message.chat_id, romlink)
     else:
         sendNotAuthorizedMessage(bot, update)
