@@ -70,8 +70,8 @@ def builder(bot, update):
         romlinkfile = open("romlink.txt", "r")
         romlink = romlinkfile.readlines()
         romlink[0]
-        bot.sendMessage(update.message.chat_id, romlink[0])
-    else:
+        bot.sendMessage(update.message.chat_id, parse_mode="Markdown", text = romlink[0])
+        else:
         sendNotAuthorizedMessage(bot, update)
 
 #def upload(bot, update):
