@@ -52,6 +52,16 @@ def buildvelvet(bot, update):
         os.system("rm /home/arn4v/velvet.zip")
     else:
         sendNotAuthorizedMessage(bot, update)
+        
+def sync(bot, update):
+    if isAuthorized(update):
+        bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
+    else:
+        romdir=update.message.text.split(' ')[1]
+        command=update.message.text.split(' ')[2]
+        os.system("mkdir /home/arn4v/%s" % romdir)
+        os.chdir('/home/arn4v/%s' % romdir)
+        os.system("%s" % command)
 
 def builder(bot, update):
     if isAuthorized(update):
@@ -155,6 +165,7 @@ def push(bot, update):
 idHandler = CommandHandler('id', id)
 buildvelvetHandler = CommandHandler('buildvelvet', buildvelvet)
 builderHandler = CommandHandler('builder', builder)
+syncHandler = CommandHandler('sync', sync)
 uploadHandler = CommandHandler('upload', upload)
 restartHandler = CommandHandler('restart', restart)
 pullHandler = CommandHandler('pull', pull)
@@ -163,6 +174,7 @@ pushHandler = CommandHandler('push', push)
 dispatcher.add_handler(idHandler)
 dispatcher.add_handler(buildvelvetHandler)
 dispatcher.add_handler(builderHandler)
+dispatcher.add_handler(syncHandler)
 dispatcher.add_handler(uploadHandler)
 dispatcher.add_handler(restartHandler)
 dispatcher.add_handler(pullHandler)
