@@ -20,14 +20,8 @@ config = configparser.ConfigParser()
 config.read('bot.ini')
 
 updater = Updater(token=config['KEYS']['bot_api'])
-velvet_path = config['VELVET']['velvet']
-los_path = config['LOS']['los']
-beta_path = config['BETA']['beta']
-stock_path = config['STOCK']['stock']
 sudo_users = config['ADMIN']['sudo']
 dispatcher = updater.dispatcher
-
-logfile = '/home/akhil/downloads/.ts/bot-log.txt'
 
 def id(bot, update):
     chatid=str(update.message.chat_id)
@@ -40,16 +34,14 @@ def id(bot, update):
     except AttributeError:
         bot.sendMessage(update.message.chat_id, text="ID of this group is " + chatid, reply_to_message_id=update.message.message_id)
 
-
-def build(bot, update):
+def buildvelvet(bot, update):
     if isAuthorized(update):
         bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
         variant=update.message.text.split(' ')[1]
+        command=update.message.text.split(' ')[2]
         os.chdir("/home/arn4v/velvet/%s" % variant)
-        bot.sendMessage(update.message.chat_id, "Building Velvet for mido: %s variant" % variant)
-        build_command = ['./build.sh']
-        subprocess.call(build_command)
-        subprocess.call(build_command)
+        bot.sendMessage(update.message.chat_id, "Building Velvet for mido: %s variant" % variant, "%s" % command)
+        os.system('bash build2.sh %s' % command)
         os.system("mv out/velvet* /home/arn4v/velvet.zip")
         filename = "/home/arn4v/velvet.zip"
         bot.sendChatAction(chat_id=update.message.chat_id,
@@ -57,59 +49,23 @@ def build(bot, update):
         bot.sendDocument(
             document=open(filename, "rb"),
             chat_id=update.message.chat_id)
+        os.system("rm /home/arn4v/velvet.zip")
     else:
         sendNotAuthorizedMessage(bot, update)
 
-#def builder(bot, update):
-#    if isAuthorized(update):
-#        bot.sendChatAction(chat_id=update.message.chat_id,
-#                           action=ChatAction.TYPING)
-#        rom=update.message.text.split(' ')[1]
-#        device=update.message.text.split(' ')[2]
-#        os.chdir("/home/arn4v/%s" % rom)
-#        bot.sendMessage(update.message.chat_id, "Building %s" % rom)
-#        subprocess.call(['source build/envsetup.sh'])
-#        os.system("breakfast %s" % device)
-#        os.system("make -j21 bacon")
-#        os.system("bash build/envsetup.sh && breakfast %s && make -j21 bacon && cd $OUT" % device)
-#        os.system("cd $OUT")
-#    else:
-#        sendNotAuthorizedMessage(bot, update)
-
-def los(bot, update):
+def builder(bot, update):
     if isAuthorized(update):
         bot.sendChatAction(chat_id=update.message.chat_id,
                            action=ChatAction.TYPING)
-        bot.sendMessage(chat_id=update.message.chat_id,
-                        text="Switched to los directory")
-        os.chdir(los_path)
-        checkout_command = ['git checkout cm-14.1']
-        pull_command = ['git pull git://github.com/velvetkernel/mido cm-14.1']
-        reset_command = ['git reset --hard']
-    else:
-        sendNotAuthorizedMessage(bot, update)
-
-def beta(bot, update):
-    if isAuthorized(update):
-        bot.sendChatAction(chat_id=update.message.chat_id,
-                           action=ChatAction.TYPING)
-        bot.sendMessage(chat_id=update.message.chat_id,
-                        text="Switched to beta kernel directory")
-        os.chdir(beta_path)
-    else:
-        sendNotAuthorizedMessage(bot, update)
-
-def stock(bot, update):
-    if isAuthorized(update):
-        bot.sendChatAction(chat_id=update.message.chat_id,
-                           action=ChatAction.TYPING)
-        bot.sendMessage(chat_id=update.message.chat_id,
-                        text="Switched to stock kernel directory")
-        os.chdir(stock_path)
-        pull_command = ['git pull git://github.com/velvetkernel/mido stock']
-        reset_command = ['git reset --hard']
-        subprocess.call(reset_command)
-        subprocess.call(pull_command)
+        rom=update.message.text.split(' ')[1]
+        device=update.message.text.split(' ')[2]
+        command=update.message.text.split(' ')[3]
+        os.system("echo ROM=%s >> /home/arn4v/.rombuild" % rom)
+        os.system("echo DEVICE=%s >> /home/arn4v/.rombuild" % device)
+        os.system("echo COMMAND=%s >> /home/arn4v/.rombuild" % command)
+        subprocess.call(['bash /home/arn4v/bin/rombuild'])
+        romlink=os.system("cat /home/arn4v/velvet/builderbot/romlink.txt")
+        bot.sendMessage(update.message.chat_id, romlink)
     else:
         sendNotAuthorizedMessage(bot, update)
 
@@ -194,20 +150,14 @@ def push(bot, update):
 idHandler = CommandHandler('id', id)
 buildvelvetHandler = CommandHandler('buildvelvet', buildvelvet)
 builderHandler = CommandHandler('builder', builder)
-losHandler = CommandHandler('los', los)
-betaHandler = CommandHandler('beta', beta)
-stockHandler = CommandHandler('stock', stock)
 uploadHandler = CommandHandler('upload', upload)
 restartHandler = CommandHandler('restart', restart)
 pullHandler = CommandHandler('pull', pull)
 pushHandler = CommandHandler('push', push)
 
 dispatcher.add_handler(idHandler)
-dispatcher.add_handler(buildHandler)
+dispatcher.add_handler(buildvelvetHandler)
 dispatcher.add_handler(builderHandler)
-dispatcher.add_handler(losHandler)
-dispatcher.add_handler(betaHandler)
-dispatcher.add_handler(stockHandler)
 dispatcher.add_handler(uploadHandler)
 dispatcher.add_handler(restartHandler)
 dispatcher.add_handler(pullHandler)
