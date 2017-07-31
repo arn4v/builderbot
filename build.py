@@ -58,12 +58,12 @@ def sync(bot, update):
         bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
         romdir=update.message.text.split(' ')[1]
         command=update.message.text.split(' ')[2]
-        bot.sendMessage(update.message.chat_id, "Syncing %s into /home/arn4v/%s" % rom)
+        bot.sendMessage(update.message.chat_id, "Syncing %s into /home/arn4v/%s" % romdir)
         os.system("mkdir /home/arn4v/%s" % romdir)
         os.chdir('/home/arn4v/%s' % romdir)
         os.system("%s" % command)
         os.system("repo sync -j128 -q")
-        bot.sendMessage(update.message.chat_id, "%s synced in /home/arn4v/%s" % rom)
+        bot.sendMessage(update.message.chat_id, "%s synced in /home/arn4v/%s" % romdir)
     else:
         sendNotAuthorizedMessage(bot, update)
 
