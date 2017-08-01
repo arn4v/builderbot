@@ -81,6 +81,7 @@ def builder(bot, update):
         os.system("bash /home/arn4v/bin/rombuild | tee /home/arn4v/velvet/builderbot/romlog")
         romlinkfile2='/home/arn4v/velvet/builderbot/romlink.txt'
         if os.path.exists(romlinkfile2):
+            os.chdir("/home/arn4v/velvet/builderbot")
             romlinkfile = open("romlink.txt", "r")
             romlink = romlinkfile.readlines()
             romlink[0]
