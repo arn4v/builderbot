@@ -42,14 +42,15 @@ def buildvelvet(bot, update):
         os.chdir("/home/arn4v/velvet/%s" % variant)
         bot.sendMessage(update.message.chat_id, "Building Velvet for mido: %s variant, %s command" % (variant, command))
         os.system('bash build2.sh %s' % command)
-        os.system("mv out/velvet* /home/arn4v/velvet.zip")
-        filename = "/home/arn4v/velvet.zip"
+        os.chdir("/home/arn4v/velvet/builderbot")
+        velvetfile = open("velvet.txt", "r")
+        velvetfile2 = velvetfile.read().replace('\n', '')
+#        velvetfile[0]
         bot.sendChatAction(chat_id=update.message.chat_id,
                            action=ChatAction.UPLOAD_DOCUMENT)
         bot.sendDocument(
-            document=open(filename, "rb"),
+            document=open(velvetfile2, "rb"),
             chat_id=update.message.chat_id)
-        os.system("rm /home/arn4v/velvet.zip")
     else:
         sendNotAuthorizedMessage(bot, update)
 
@@ -80,7 +81,7 @@ def builder(bot, update):
         os.system("echo DEVICE=%s >> /home/arn4v/.rombuild" % device)
         os.system("echo COMMAND=%s >> /home/arn4v/.rombuild" % command)
         bot.sendMessage(update.message.chat_id, "Building %s for %s" % (rom, device))
-        os.system("bash /home/arn4v/bin/rombuild > /home/arn4v/velvet/builderbot/romlog")
+        os.system("bash /home/arn4v/bin/rombuild | tee /home/arn4v/velvet/builderbot/romlog")
         romlinkfile2='/home/arn4v/velvet/builderbot/romlink.txt'
         if os.path.exists(romlinkfile2):
             romlinkfile = open("romlink.txt", "r")
