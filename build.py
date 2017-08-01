@@ -61,6 +61,7 @@ def sync(bot, update):
         bot.sendMessage(update.message.chat_id, "Syncing %s" % romdir)
         os.chdir('/home/arn4v/%s' % romdir)
         os.system("time repo sync -f -c --no-clone-bundle -j128 --no-tags")
+        bot.sendMessage(update.message.chat_id, "%s synced." % romdir) 
     else:
         sendNotAuthorizedMessage(bot, update)
 
