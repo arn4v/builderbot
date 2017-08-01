@@ -159,6 +159,7 @@ def clearlog(bot, update):
 
 def pull(bot, update):
     if isAuthorized(update):
+        os.chdir("/home/arn4v/velvet/builderbot")
         bot.sendChatAction(update.message.chat_id, ChatAction.TYPING)
         bot.sendMessage(update.message.chat_id, reply_to_message_id=update.message.message_id, text="Fetching remote repo")
         subprocess.call(['git', 'fetch', 'origin', 'master', '-f'])
@@ -170,6 +171,7 @@ def pull(bot, update):
 
 def push(bot, update):
     if isAuthorized(update):
+        os.chdir("/home/arn4v/velvet/builderbot")
         subprocess.call(['git', 'push', 'origin', 'master'])
         bot.sendMessage(update.message.chat_id, text="K pushed")
     else:
