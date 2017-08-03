@@ -86,6 +86,7 @@ def builder(bot, update):
             romlink = romlinkfile.readlines()
             romlink[0]
             bot.sendMessage(update.message.chat_id, parse_mode="Markdown", text = romlink[0])
+            os.system("/home/arn4v/.rombuild")
         else:
             bot.sendMessage(update.message.chat_id, "FAILED: %s build for %s. Sending log." % (rom, device))
             romlog='/home/arn4v/velvet/builderbot/romlog'
@@ -96,6 +97,7 @@ def builder(bot, update):
                 chat_id=update.message.chat_id)
             os.chdir("/home/arn4v/velvet/builderbot")
             os.system("rm romlog")
+            os.system("/home/arn4v/.rombuild")
     else:
         sendNotAuthorizedMessage(bot, update)
 
