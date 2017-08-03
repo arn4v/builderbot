@@ -34,18 +34,17 @@ def id(bot, update):
     except AttributeError:
         bot.sendMessage(update.message.chat_id, text="ID of this group is " + chatid, reply_to_message_id=update.message.message_id)
 
-def buildvelvet(bot, update):
+def velvet(bot, update):
     if isAuthorized(update):
         bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
         variant=update.message.text.split(' ')[1]
         command=update.message.text.split(' ')[2]
-        os.chdir("/home/arn4v/velvet/%s" % variant)
+        os.chdir("/home/arn4v/velvet/kernel/%s" % variant)
         bot.sendMessage(update.message.chat_id, "Building Velvet for mido: %s variant, %s command" % (variant, command))
         os.system('bash build2.sh %s' % command)
         os.chdir("/home/arn4v/velvet/builderbot")
         velvetfile = open("velvet.txt", "r")
         velvetfile2 = velvetfile.read().replace('\n', '')
-#        velvetfile[0]
         bot.sendChatAction(chat_id=update.message.chat_id,
                            action=ChatAction.UPLOAD_DOCUMENT)
         bot.sendDocument(
@@ -101,28 +100,6 @@ def builder(bot, update):
     else:
         sendNotAuthorizedMessage(bot, update)
 
-#def upload(bot, update):
-#    if isAuthorized(update):
-#        bot.sendChatAction(chat_id=update.message.chat_id,
-#                           action=ChatAction.TYPING)
-#        bot.sendMessage(chat_id=update.message.chat_id,
-#                        text="Uploading to the chat")
-#        clean_command=os.system("rm /home/arn4v/velvet/*/out/*.zip")
-#        subprocess.call(clean_command)
-#        rename_command=os.system("mv out/velvet* /home/arn4v/velvet.zip")
-#        subprocess.call(rename_command)
-#        filename=os.system("ls out/velvet* | tail -1")
-#        filename = "/home/arn4v/velvet.zip"
-#        bot.sendChatAction(chat_id=update.message.chat_id,
-#                           action=ChatAction.UPLOAD_DOCUMENT)
-#        bot.sendDocument(
-#            document=open(filename, "rb"),
-#            chat_id=update.message.chat_id)
-#        delete_command=os.system("rm /home/arn4v/velvet.zip")
-#        subprocess.call(delete_command)
-#    else:
-#        sendNotAuthorizedMessage(bot, update)
-
 def upload(bot, update):
     if isAuthorized(update):
         bot.sendChatAction(chat_id=update.message.chat_id, action=ChatAction.TYPING)
@@ -177,12 +154,12 @@ def push(bot, update):
     if isAuthorized(update):
         os.chdir("/home/arn4v/velvet/builderbot")
         subprocess.call(['git', 'push', 'origin', 'master'])
-        bot.sendMessage(update.message.chat_id, text="K pushed")
+        bot.sendMessage(update.message.chat_id, text="Pushed.")
     else:
         sendNotAuthorizedMessage(bot, update)
 
 idHandler = CommandHandler('id', id)
-buildvelvetHandler = CommandHandler('buildvelvet', buildvelvet)
+velvetHandler = CommandHandler('velvet', velvet)
 builderHandler = CommandHandler('builder', builder)
 syncHandler = CommandHandler('sync', sync)
 uploadHandler = CommandHandler('upload', upload)
@@ -191,7 +168,7 @@ pullHandler = CommandHandler('pull', pull)
 pushHandler = CommandHandler('push', push)
 
 dispatcher.add_handler(idHandler)
-dispatcher.add_handler(buildvelvetHandler)
+dispatcher.add_handler(velvetHandler)
 dispatcher.add_handler(builderHandler)
 dispatcher.add_handler(syncHandler)
 dispatcher.add_handler(uploadHandler)
