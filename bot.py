@@ -130,14 +130,6 @@ def sendNotAuthorizedMessage(bot, update):
     bot.sendMessage(chat_id=update.message.chat_id,
                     text="@" + update.message.from_user.username + " isn't authorized for this task!")
 
-def getlog(bot, update):
-    bot.sendDocument(update.message.chat_id, open(logfile, 'rb'))
-
-def clearlog(bot, update):
-    if isAuthorized(update):
-        subprocess.call(['rm', '-fv', logfile])
-        bot.sendMessage(update.message.chat_id, "Cleared logs.")
-
 def pull(bot, update):
     if isAuthorized(update):
         os.chdir("/home/arn4v/velvet/builderbot")
