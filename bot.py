@@ -73,9 +73,7 @@ def builder(bot, update):
         command=update.message.text.split(' ')[3]
         os.system("rm /home/arn4v/velvet/builderbot/romlink.txt")
         os.system("rm /home/arn4v/.rombuild")
-        os.system("echo ROM=%s >> /home/arn4v/.rombuild" % rom)
-        os.system("echo DEVICE=%s >> /home/arn4v/.rombuild" % device)
-        os.system("echo COMMAND=%s >> /home/arn4v/.rombuild" % command)
+        os.system("echo ROM=%s >> /home/arn4v/.rombuild; echo DEVICE=%s >> /home/arn4v/.rombuild; echo COMMAND=%s >> /home/arn4v/.rombuild" % (rom, device, command))
         bot.sendMessage(update.message.chat_id, "Building %s for %s" % (rom, device))
         os.system("bash /home/arn4v/bin/rombuild | tee /home/arn4v/velvet/builderbot/romlog")
         romlinkfile2='/home/arn4v/velvet/builderbot/romlink.txt'
