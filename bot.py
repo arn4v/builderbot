@@ -73,7 +73,7 @@ def builder(bot, update):
         command=update.message.text.split(' ')[3]
         os.system("rm /home/arn4v/velvet/builderbot/romlink.txt")
         bot.sendMessage(update.message.chat_id, "Building %s for %s" % (rom, device))
-        os.system("export ROMBUILD=1")
+        os.system("bash /home/arn4v/velvet/builderbot/exportrb.sh")
         os.system("bash /home/arn4v/bin/rombuild %s %s %s | tee /home/arn4v/velvet/builderbot/romlog" % (rom, device, command))
         romlinkfile2='/home/arn4v/velvet/builderbot/romlink.txt'
         if os.path.exists(romlinkfile2):
